@@ -1,170 +1,92 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Akash — Cinematic Portfolio & UPSC Library (Mobile-Optimized Demo)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinematic UPSC Resources</title>
   <style>
-    :root{
-      --bg-1:#0f1114; --bg-2:#1b1d20; --glass: rgba(255,255,255,0.06);
-      --accent:#d62828; --muted:#cfcfcf; --card:#131517;
-      --radius:14px; --glass-blur:8px; --mono:'Orbitron', monospace; --ui:'Inter', system-ui, sans-serif;
-      --max-width:1100px;
+    * {box-sizing:border-box;margin:0;padding:0;}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: rgba(20,20,20,0.95);
+      color: #fff;
+      overflow-x: hidden;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e9eef6;font-family:var(--ui);-webkit-font-smoothing:antialiased}
-
-    /* Canvas fills behind everything */
-    #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-    .glass-wrap{position:fixed;inset:0;backdrop-filter: blur(4px) saturate(110%);-webkit-backdrop-filter: blur(4px);z-index:0}
-
-    /* page container */
-    .app{position:relative;z-index:2;max-width:var(--max-width);margin:20px auto;padding:18px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .logo{display:flex;align-items:center;gap:12px}
-    .mono{font-family:var(--mono);font-weight:700;letter-spacing:1px}
-    .brand{display:flex;flex-direction:column;line-height:1}
-    .brand .name{font-size:18px}
-    .brand .sub{font-size:11px;color:var(--muted)}
-
-    nav{display:flex;gap:12px;align-items:center}
-    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600;font-size:14px}
-    nav a:hover{color:white;background:rgba(255,255,255,0.03)}
-
-    /* mobile-first hero */
-    .hero{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px;align-items:center}
-    .hero-left{padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;backdrop-filter: blur(6px)}
-    h1{font-family:var(--mono);font-size:26px;margin:0}
-    .subtitle{color:var(--muted);margin-top:8px;font-size:14px}
-    .hero-cta{margin-top:14px;display:flex;gap:12px;flex-direction:column}
-    .btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px}
-    .btn.primary{background:linear-gradient(90deg, rgba(214,40,40,0.95), rgba(180,20,20,0.95));color:white;border:none;box-shadow:0 8px 30px rgba(214,40,40,0.12)}
-
-    /* mockup kept but hidden on very small screens */
-    .mockup{height:220px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-    .mockup .screen{width:260px;height:160px;border-radius:10px;background:linear-gradient(180deg,#0c0d0f,#101214);box-shadow:inset 0 0 40px rgba(0,0,0,0.6),0 8px 30px rgba(0,0,0,0.6);transform:rotate(-4deg)}
-
-    section{margin-top:18px}
-    .search-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-    .search{flex:1}
-    input.search-input{width:100%;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-size:15px}
-    .filters{display:flex;gap:8px}
-    select{padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-
-    /* resource grid */
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-height:120px;display:flex;flex-direction:column;gap:8px}
-    .card .title{font-weight:800;font-family:var(--mono);font-size:16px}
-    .tags{display:flex;gap:8px;flex-wrap:wrap}
-    .tag{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.03);color:var(--muted)}
-    .material-list{margin-top:8px}
-    .material{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;margin-top:8px;background:rgba(0,0,0,0.06)}
-    .download-btn{padding:10px 12px;border-radius:10px;border:none;background:transparent;color:var(--accent);cursor:pointer;font-weight:800}
-
-    /* modal */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:40}
-    .modal.show{display:flex}
-    .modal .panel{background:linear-gradient(180deg,#0f1113,#121316);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);min-width:300px}
-    .progress{height:8px;background:rgba(255,255,255,0.04);border-radius:8px;margin-top:8px;overflow:hidden}
-    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#ff6b6b);border-radius:8px}
-
-    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-
-    /* cinematic hover (reduced on touch devices) */
-    .card:hover{transform:translateY(-4px);transition:transform .25s cubic-bezier(.2,.9,.1,1);box-shadow:0 16px 40px rgba(0,0,0,0.5)}
-
-    /* cursor accent - reduced on mobile */
-    body{cursor:none}
-    .cursor{position:fixed;left:0;top:0;width:18px;height:18px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:60;mix-blend-mode:screen;background:radial-gradient(circle at 40% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1) 30%)}
-
-    /* hacker popup */
-    .hacker-popup{position:fixed;right:14px;border-radius:10px;padding:12px 14px;background:linear-gradient(180deg,#071018,#0f1113);border:1px solid rgba(214,40,40,0.12);box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:70;color:var(--muted);font-family:var(--mono);font-size:13px}
-    .hacker-popup small{display:block;color:#9fb2c8;font-family:var(--ui);font-size:11px;margin-top:6px}
-
-    /* responsive tweaks for larger screens */
-    @media (min-width:900px){
-      .hero{grid-template-columns:1fr 420px}
-      .grid{grid-template-columns:repeat(3,1fr)}
-      .brand .name{font-size:20px}
+    header {
+      padding:1rem;
+      text-align:center;
+      background: rgba(30,30,30,0.7);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top:0;
+      z-index:100;
     }
-
-    @media (max-width:420px){
-      :root{--radius:10px}
-      .btn{padding:14px;font-size:16px;border-radius:14px}
-      .cursor{display:none}
-      .mockup{display:none}
+    h1 {font-size:1.5rem;color:#e33;}
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+      gap:1rem;
+      padding:1rem;
     }
-
+    .card {
+      background: rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      padding:1rem;
+      backdrop-filter: blur(6px);
+    }
+    .card h2 {font-size:1.2rem;color:#fff;margin-bottom:0.5rem;}
+    .card p {font-size:0.9rem;color:#ccc;margin-bottom:0.5rem;}
+    .materials {margin-top:0.5rem;}
+    .btn {
+      display:inline-block;
+      padding:0.5rem 1rem;
+      margin:0.25rem 0;
+      background:#e33;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      text-decoration:none;
+      font-size:0.85rem;
+    }
+    .btn:hover {background:#f55;}
+    /* Hacker popup */
+    .popup {
+      position:fixed;
+      right:1rem;
+      bottom:1rem;
+      background:#111;
+      border:1px solid #0f0;
+      color:#0f0;
+      padding:0.5rem 1rem;
+      font-family:monospace;
+      border-radius:6px;
+      opacity:0;
+      transform:translateY(20px);
+      transition: all 0.3s ease;
+      z-index:200;
+    }
+    .popup.show {
+      opacity:1;
+      transform:translateY(0);
+    }
+    canvas#bgCanvas {
+      position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;
+    }
+    @media(max-width:600px){
+      h1 {font-size:1.2rem;}
+      .card {padding:0.75rem;}
+      .btn {padding:0.4rem 0.8rem;font-size:0.8rem;}
+    }
   </style>
 </head>
 <body>
   <canvas id="bgCanvas"></canvas>
-  <div class="glass-wrap"></div>
-  <div class="cursor" id="cursor"></div>
-
-  <main class="app" role="main">
-    <header>
-      <div class="logo">
-        <div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7f1d1d);display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 8px 30px rgba(214,40,40,0.12)">A</div>
-        <div class="brand">
-          <div class="name mono">Akash</div>
-          <div class="sub">Cybersecurity expert & UI Artist</div>
-        </div>
-      </div>
-      <nav aria-label="Main navigation">
-        <a href="#projects">Portfolio</a>
-        <a href="#resources">Resources</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </header>
-
-    <section class="hero" aria-label="Hero">
-      <div class="hero-left">
-        <h1>Akash — Cybersecurity Enthusiast & UI Artist</h1>
-        <p class="subtitle">I build secure systems and cinematic interfaces. Here’s a curated vault of my UI experiments — and a free UPSC notes library for aspirants. Spoiler: the visuals bite back.</p>
-        <div class="hero-cta">
-          <button class="btn primary" id="exploreWork">Explore Work</button>
-          <button class="btn" id="browseMaterials">Browse UPSC Materials</button>
-        </div>
-        <div style="margin-top:12px;color:var(--muted);font-size:14px">Cheeky tagline: "Secure by default. Dramatic by design."</div>
-      </div>
-      <div class="mockup" aria-hidden="true">
-        <div class="screen" id="screenMockup"></div>
-      </div>
-    </section>
-
-    <section id="resources">
-      <div class="search-filter">
-        <div class="search"><input class="search-input" id="search" placeholder="Search subjects or materials..." aria-label="Search materials" /></div>
-        <div class="filters">
-          <select id="filterStage" aria-label="Filter stage"><option value="all">All stages</option><option value="Prelims">Prelims</option><option value="Mains">Mains</option><option value="Optional">Optional</option></select>
-          <select id="sortBy" aria-label="Sort by"><option value="new">Newest</option><option value="popular">Most downloaded</option></select>
-        </div>
-      </div>
-
-      <div id="grid" class="grid" aria-live="polite"></div>
-      <div id="empty" class="empty" style="display:none">No notes yet — become a hero and upload your first sacred PDF!</div>
-    </section>
-
-    <footer>
-      <div>© <span id="year"></span> Akash — Cinematic UI & UPSC Library • <span class="muted">Made with a dash of dramatic flair</span></div>
-    </footer>
-  </main>
-
-  <!-- modal for download confirmation -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
-    <div class="panel">
-      <div id="modalTitle">Preparing download</div>
-      <div class="progress" aria-hidden="false"><i id="progressBar"></i></div>
-      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" id="modalConfirm">Start</button><button class="btn" id="modalCancel">Cancel</button></div>
-    </div>
-  </div>
-
-  <script>
-    // ==== Mobile-optimized sample data with Drive links (placeholders) ====
-    const DATA = [
+  <header>
+    <h1>UPSC Resources Hub</h1>
+    <p>Free study material – Cyber-Cinematic Style</p>
+  </header>  <main class="grid" id="resourceGrid"></main>  <div id="popup" class="popup"></div>  <script>
+    const data = [
       {id:'polity',title:'Polity',description:'Consolidated notes, previous year Qs, MCQ sets',tags:['constitution','important'],materials:[{id:'p1',title:'Polity Notes - 2025',url:'https://cdn.visionias.in/value_added_material/5ca16-polity.pdf',size:'4.2MB',type:'pdf',stage:'Prelims'},{id:'p2',title:'Polity MCQs',url:'https://uploads.iasscore.in/pdf/STATIC_MATERIAL_Polity_100.pdf',size:'2.1MB',type:'zip',stage:'Prelims'}]},
       {id:'history',title:'History',description:'Ancient to Modern concise notes & timelines',tags:['timelines'],materials:[{id:'h1',title:'Ancient History Notes',url:'https://drive.google.com/uc?export=download&id=DRIVE_FILE_ID_HISTORY',size:'5.4MB',type:'pdf',stage:'Prelims'}]},
       {id:'geography',title:'Geography',description:'Maps, diagrams, pattern questions',tags:['maps'],materials:[{id:'g1',title:'Geography Diagrams',url:'https://cdn.visionias.in/value_added_material/7ef8f-geography-optional-paper-1-3.pdf',size:'3.2MB',type:'pdf',stage:'Prelims'}]},
@@ -179,200 +101,47 @@
       {id:'law',title:'Law & Governance',description:'Acts, judgments & governance notes',tags:['law'],materials:[{id:'l1',title:'Constitutional Law',url:'https://cdnbbsr.s3waas.gov.in/s380537a945c7aaa788ccfcdf1b99b5d8f/uploads/2023/05/2023050195.pdf',size:'5.0MB',type:'pdf',stage:'Mains'}]}
     ];
 
-    // ==== DOM refs ==== 
-    const grid = document.getElementById('grid');
-    const searchInput = document.getElementById('search');
-    const filterStage = document.getElementById('filterStage');
-    const sortBy = document.getElementById('sortBy');
-    const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modalTitle');
-    const progressBar = document.getElementById('progressBar');
-    let activeDownload = null;
-
-    // === render card optimized for mobile touch targets ===
-    function formatCard(item){
-      const container = document.createElement('div'); container.className='card';
-      container.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:start"><div style="flex:1;min-width:0">
-          <div class="title">${item.title}</div>
-          <div class="muted" style="font-size:13px;margin-top:6px">${item.description}</div>
-        </div></div>
-        <div class="tags">${item.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        <div class="material-list" aria-hidden="false">
-          ${item.materials.map(m=>`<div class="material"><div style="min-width:0"><strong style="font-size:14px">${m.title}</strong><div class="muted" style="font-size:12px">${m.size} • ${m.type} • ${m.stage}</div></div><div style="display:flex;gap:8px;align-items:center"><button class="download-btn" data-sub="${item.id}" data-mat="${m.id}" data-url="${m.url}">Download</button></div></div>`).join('')}
-        </div>
-      `;
-      return container;
-    }
-
-    function render(data){
-      grid.innerHTML='';
-      if(!data.length){document.getElementById('empty').style.display='block';return}
-      document.getElementById('empty').style.display='none';
-      // use document fragment for performance
-      const frag = document.createDocumentFragment();
-      data.forEach(d=>frag.appendChild(formatCard(d)));
-      grid.appendChild(frag);
-      // attach listeners (event delegation would be more efficient but kept explicit for clarity)
-      document.querySelectorAll('.download-btn').forEach(b=>b.addEventListener('click',onDownloadClick));
-    }
-
-    // === filtering/search ===
-    function applyFilters(){
-      const q = searchInput.value.trim().toLowerCase();
-      const stage = filterStage.value;
-      let result = DATA.filter(s=>{
-        const matchesQ = s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.materials.some(m=>m.title.toLowerCase().includes(q));
-        return matchesQ && (stage==='all' || s.materials.some(m=>m.stage===stage));
+    const grid = document.getElementById('resourceGrid');
+    data.forEach(subject=>{
+      const card = document.createElement('div');
+      card.className='card';
+      card.innerHTML = `<h2>${subject.title}</h2><p>${subject.description}</p>`;
+      const matDiv = document.createElement('div');
+      matDiv.className='materials';
+      subject.materials.forEach(m=>{
+        const btn = document.createElement('a');
+        btn.href=m.url;
+        btn.target='_blank';
+        btn.className='btn';
+        btn.innerText=`Download ${m.title} (${m.size})`;
+        btn.addEventListener('click',()=>{
+          showPopup(`Hacking mainframe... delivering ${m.title}`);
+        });
+        matDiv.appendChild(btn);
       });
-      if(sortBy.value==='popular'){
-        result = result.sort((a,b)=>b.title.length - a.title.length);
-      }
-      render(result);
-    }
-
-    searchInput.addEventListener('input',debounce(applyFilters,180));
-    filterStage.addEventListener('change',applyFilters);
-    sortBy.addEventListener('change',applyFilters);
-
-    // === download flow: uses Drive link if present ===
-    function onDownloadClick(e){
-      const btn = e.currentTarget; const sub = btn.dataset.sub; const mid = btn.dataset.mat; const url = btn.dataset.url;
-      activeDownload = {sub,mid,url,btn};
-      modalTitle.textContent = `Download: ${mid} — ${sub}`;
-      progressBar.style.width='0%';
-      modal.classList.add('show');
-      // cheeky popup sometimes
-      if(Math.random() < 0.45) showHackerPopup("Tip: If Drive acts up, try again in 1 sec — hackers call it " + '"persistence"');
-    }
-
-    document.getElementById('modalCancel').addEventListener('click',()=>{modal.classList.remove('show');activeDownload=null});
-    document.getElementById('modalConfirm').addEventListener('click',()=>{
-      if(!activeDownload) return; modalTitle.textContent='Downloading...';
-      modalConfirmDownload(activeDownload).then(success=>{
-        modal.classList.remove('show');
-        if(success && activeDownload && activeDownload.url && activeDownload.url !== '#'){
-          // navigate to drive download link - open in new tab for UX
-          window.open(activeDownload.url, '_blank');
-        }
-        activeDownload=null;
-      });
+      card.appendChild(matDiv);
+      grid.appendChild(card);
     });
 
-    const modalConfirmDownload = ({sub,mid,url})=>new Promise((resolve)=>{
-      let p = 0; const el = progressBar; const id = setInterval(()=>{
-        // reduce heavy computations on mobile by increasing interval
-        p += 10 + Math.random()*18;
-        // 8% simulated failure
-        if(Math.random()<0.08){clearInterval(id);el.style.width='0%';modalTitle.textContent='Network error — retry?';showHackerPopup('Connection glitch detected — phantom packet dropped.');resolve(false);return}
-        if(p>=100){p=100; el.style.width='100%'; clearInterval(id);
-          // increment local counter
-          const key = `dl_${sub}_${mid}`; localStorage.setItem(key, (parseInt(localStorage.getItem(key)||'0')+1));
-          setTimeout(()=>{modalTitle.textContent='Completed ✓'; showHackerPopup('Download count +1. Keep the knowledge flowing.'); setTimeout(()=>resolve(true),300)},250);
-        } else {el.style.width = p+'%';}
-      }, isMobile() ? 220 : 140);
-    });
-
-    // debounce
-    function debounce(fn,ms=200){let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
-
-    // populate initial
-    document.getElementById('year').textContent = new Date().getFullYear();
-    render(DATA);
-
-    // === cinematic mockup animation (lightweight on mobile) ===
-    const screen = document.getElementById('screenMockup');
-    let angle = -4; setInterval(()=>{angle += 0.5; screen.style.transform = `rotate(${angle}deg)`;},isMobile()?3200:2200);
-
-    // === custom cursor (hidden on small screens) ===
-    const cursor = document.getElementById('cursor');
-    if(!isMobile()) window.addEventListener('mousemove',e=>{cursor.style.left = e.clientX+'px';cursor.style.top = e.clientY+'px'})
-
-    function isMobile(){return matchMedia('(pointer:coarse)').matches || innerWidth < 600}
-
-    // === background water-drop glass animation optimized for mobile ===
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
-    function resizeCanvas(){
-      const W = canvas.width = Math.floor(innerWidth * dpr);
-      const H = canvas.height = Math.floor(innerHeight * dpr);
-      canvas.style.width = innerWidth + 'px';
-      canvas.style.height = innerHeight + 'px';
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    resizeCanvas(); window.addEventListener('resize',resizeCanvas);
-
-    // droplets particle system (reduced counts on mobile)
-    const drops = [];
-    function addDrop(x,y,r=4,life=120){drops.push({x,y,r,life,age:0,vx:(Math.random()-0.5)*0.4,vy: (Math.random()*0.6)+0.3})}
-    // spawn rate tuned per device
-    const spawnInterval = isMobile()?500:300;
-    let spawnHandle = setInterval(()=>{const count = isMobile()?1:2; for(let i=0;i<count;i++){addDrop(Math.random()*innerWidth, -10 + Math.random()*40, 2+Math.random()*6, 140)}}, spawnInterval);
-
-    // occasional big ripple
-    setInterval(()=>{addDrop(Math.random()*innerWidth,Math.random()*innerHeight,10+Math.random()*20,240)},isMobile()?3600:2500);
-
-    // pointer interaction
-    window.addEventListener('pointerdown',e=>{addDrop(e.clientX,e.clientY,6+Math.random()*12,200)});
-
-    function draw(){
-      ctx.clearRect(0,0,innerWidth,innerHeight);
-      // subtle code stream
-      const cols = isMobile()?30:80;
-      for(let i=0;i<cols;i++){
-        const x = (i/cols) * innerWidth + ((Date.now()/2000)%innerWidth);
-        ctx.fillStyle = 'rgba(255,255,255,0.01)';
-        ctx.fillRect((x*0.7 + i*6)%innerWidth, (i*12)%innerHeight, isMobile()?1:2, isMobile()?8:14);
-      }
-
-      for(let i=drops.length-1;i>=0;i--){
-        const d = drops[i]; d.age++; d.x += d.vx; d.y += d.vy; d.vy *= 1.002;
-        const alpha = Math.max(0,1 - d.age/(d.life||130));
-        const g = ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.r*8);
-        g.addColorStop(0, `rgba(255,255,255,${0.06*alpha})`);
-        g.addColorStop(1, `rgba(255,255,255,0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x,d.y,d.r*8,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle = `rgba(255,255,255,${0.28*alpha})`; ctx.beginPath(); ctx.ellipse(d.x, d.y, d.r, d.r*1.6, 0, 0, Math.PI*2); ctx.fill();
-        const rippleRadius = d.age*0.4;
-        ctx.strokeStyle = `rgba(255,255,255,${0.02* (1-alpha)})`;
-        ctx.beginPath(); ctx.arc(d.x, d.y, rippleRadius,0,Math.PI*2); ctx.stroke();
-        if(d.age > d.life) drops.splice(i,1);
-      }
-      requestAnimationFrame(draw);
-    }
-    draw();
-
-    // === cheeky hacker popups (side notifications) ===
-    function showHackerPopup(msg){
-      const id = 'hp_'+Math.random().toString(36).slice(2,9);
-      const el = document.createElement('div'); el.className='hacker-popup'; el.id=id;
-      el.innerHTML = `<strong>▶ ${msg}</strong><small>${new Date().toLocaleTimeString()}</small>`;
-      document.body.appendChild(el);
-      // random offset stacking
-      const existing = document.querySelectorAll('.hacker-popup');
-      el.style.top = (14 + existing.length*70) + 'px';
-      // auto-dismiss
-      setTimeout(()=>{el.style.opacity=1;},30);
-      setTimeout(()=>{el.style.transition='transform .5s ease, opacity .6s ease'; el.style.transform='translateX(16px)'; el.style.opacity=0; setTimeout(()=>el.remove(),600)}, 4200 + Math.random()*2400);
+    function showPopup(msg){
+      const popup=document.getElementById('popup');
+      popup.innerText=msg;
+      popup.classList.add('show');
+      setTimeout(()=>{popup.classList.remove('show');},3000);
     }
 
-    // show a welcome cheeky popup on mobile first-visit
-    if(!localStorage.getItem('seen_welcome')){
-      showHackerPopup('Welcome — vault unlocked in mobile mode. Tips: Tap download then Start.');
-      localStorage.setItem('seen_welcome','1');
-    }
-
-    // small keyboard/aria niceties
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal.classList.remove('show');activeDownload=null}});
-
-    // hero interaction
-    document.getElementById('browseMaterials').addEventListener('click',()=>{location.hash='#resources';document.getElementById('search').focus(); showHackerPopup('Scrolling to the UPSC vault...')});
-    document.getElementById('exploreWork').addEventListener('click',()=>{showHackerPopup('Portfolio demo — more projects in full repo.'); alert('Portfolio section is a demo — in a full project this would scroll to projects.');});
-
-    // accessibility hint: focus states on first keyboard touch
-    document.body.addEventListener('keydown',()=>{document.querySelectorAll('button, a, input, select').forEach(el=>el.style.outline='2px dashed rgba(214,40,40,0.12)');}, {once:true});
-
-  </script>
-</body>
+    // Water drop glass window animation
+    const canvas=document.getElementById('bgCanvas');
+    const ctx=canvas.getContext('2d');
+    let w,h;
+    function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
+    window.addEventListener('resize',resize);resize();
+    const drops=[];
+    class Drop{constructor(){this.x=Math.random()*w;this.y=Math.random()*-h;this.r=2+Math.random()*4;this.speed=1+Math.random()*3;}
+      update(){this.y+=this.speed;if(this.y>h){this.y=Math.random()*-100;this.x=Math.random()*w;}}
+      draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fill();}}
+    for(let i=0;i<100;i++){drops.push(new Drop());}
+    function animate(){ctx.clearRect(0,0,w,h);ctx.fillStyle='rgba(20,20,20,0.4)';ctx.fillRect(0,0,w,h);drops.forEach(d=>{d.update();d.draw();});requestAnimationFrame(animate);}animate();
+  </script></body>
 </html>
+    
